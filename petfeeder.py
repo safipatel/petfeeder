@@ -75,13 +75,13 @@ def checktime(sc):
 	if(time[0]=='0'):
 		time=time[1:]
 	if time==getFormatedBreakfast() and int(hadbreakfast)==0:
-		feed()
+		thread2.onThread(thread2.feed())
 		hadbreakfast=True
 	elif time==getFormatedLunch() and int(hadlunch)==0:
-		feed()
+		thread2.onThread(thread2.feed())
 		hadlunch=True
 	elif time==getFormatedDinner() and int(haddinner)==0:
-		feed()
+		thread2.onThread(thread2.feed())
 		haddinner=True
 	elif time=='24:00':
 		hadbreakfast=False
@@ -137,22 +137,20 @@ def main():
 	root.destroy()
 
 class myThread (threading.Thread):
-	def __init__(self, threadID):
+	def __init__(self):
 		threading.Thread.__init__(self)
-		self.threadID = threadID
 	def run(self):
 		self.s = sched.scheduler(time.time, time.sleep)
 		self.s.enter(1, 1, checktime, (self.s,))
 		self.s.run()
 class feedThread(threading.Thread):
-	def __init__(self,q ,threadID):
+	def __init__(self,q):
 		threading.Thread.__init__(self)
-		self.threadID = threadID
 		self.q = q
 	def onThread(self, function, *args, **kwargs):
 		self.q.put((function, args, kwargs))
 	def feed(self):
-		pwm.setPWM(channel,0,servoMax)
+		pwm.setPWM(channel,1,600)
 	def run(self):
 		while True:
 			try:
@@ -162,8 +160,11 @@ class feedThread(threading.Thread):
 				self.idle()
 	def idle(self):
 		pass
-thread1 = myThread(1)
+thread1 = myThread()
 thread1.start()
+thread2 = feedThread()
+thread2.start()
+
 
 	
 main()
