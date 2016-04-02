@@ -155,7 +155,7 @@ class feedThread(threading.Thread):
 		pwm.setPWM(channel,0,servoMax)
 	def run(self):
 		while True:
-            try:
+			try:
                 function, args, kwargs = self.q.get(timeout=self.timeout)
                 function(*args, **kwargs)
             except queue.Empty:
